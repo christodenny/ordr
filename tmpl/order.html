@@ -46,7 +46,7 @@
           <form class="col-sm-4 col-12" action="/update" method="get">
             <h3>Dishes</h3>
             {{range .Dishes}}
-            <h4>{{.Name}}: ${{.Price}} <div class=form-row form-group><input type=number class=form-control name={{.Name}} value={{.Count}}></div></h4>
+            <h4>{{.Name}}: ${{.Price}} <div class=form-row form-group><input type=number class=form-control name={{.Name}} placeholder={{.Count}}></div></h4>
             {{end}}
             <h2>Your Total: ${{.Total}}</h2>
             <div class="form-row form-group justify-content-center">
