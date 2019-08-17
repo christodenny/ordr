@@ -202,13 +202,16 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
     Path: "/",
   }
   http.SetCookie(w, &c)
-  blankOrder := totalOrder
-  blankOrder.Name = name
-  blankOrder.Total = 0.0
-  for i, _ := range blankOrder.Dishes {
-    blankOrder.Dishes[i].Count = 0
+  _, ok := orders[name]
+  if !ok {
+    blankOrder := totalOrder
+    blankOrder.Name = name
+    blankOrder.Total = 0.0
+    for i, _ := range blankOrder.Dishes {
+      blankOrder.Dishes[i].Count = 0
+    }
+    orders[name] = &blankOrder
   }
-  orders[name] = &blankOrder
   http.Redirect(w, r, "/", redirect)
 }
 
@@ -221,6 +224,15 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
   http.Redirect(w, r, "/", redirect)
 }
 
+func ResetHandler(w http.ResponseWriter, r *http.Request) {
+  orders = map[string]*Order{}
+  for i, _ := range totalOrder.Dishes {
+    totalOrder.Dishes[i].Count = 0
+  }
+  totalOrder.Total = 0.0
+  http.Redirect(w, r, "/", redirect)
+}
+
 func main() {
   r := mux.NewRouter()
   r.HandleFunc("/", HomeHandler)
@@ -228,6 +240,7 @@ func main() {
   r.HandleFunc("/update", UpdateHandler)
   r.HandleFunc("/create_user", CreateUserHandler)
   r.HandleFunc("/logout", LogoutHandler)
+  r.HandleFunc("/reset", ResetHandler)
 
   // Note that the path given to the http.Dir function is relative to the project
   // directory root.
