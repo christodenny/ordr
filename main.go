@@ -30,12 +30,96 @@ var (
     Name: "Total",
     Dishes: []Dish{
       Dish{
-        Name: "Lamb Skewer",
+        Name: "Lamb",
+        Price: 1.75,
+      },
+      Dish{
+        Name: "Beef",
+        Price: 1.50,
+      },
+      Dish{
+        Name: "Chicken Wing",
+        Price: 2.00,
+      },
+      Dish{
+        Name: "Chicken",
+        Price: 1.50,
+      },
+      Dish{
+        Name: "Chicken Gizzard",
+        Price: 1.00,
+      },
+      Dish{
+        Name: "Chicken Gristle",
+        Price: 1.99,
+      },
+      Dish{
+        Name: "Chicken Heart",
+        Price: 1.00,
+      },
+      Dish{
+        Name: "Shrimp",
+        Price: 1.00,
+      },
+      Dish{
+        Name: "Squid",
+        Price: 1.00,
+      },
+      Dish{
+        Name: "Yellow Croaker",
+        Price: 1.00,
+      },
+      Dish{
+        Name: "Pollack",
+        Price: 5.99,
+      },
+      Dish{
+        Name: "Pig Feet",
+        Price: 4.99,
+      },
+      Dish{
+        Name: "Sausage",
+        Price: 1.00,
+      },
+      Dish{
+        Name: "Lamb Kidney",
         Price: 2.99,
       },
       Dish{
-        Name: "Beef Skewer",
-        Price: 3.99,
+        Name: "Quail",
+        Price: 4.99,
+      },
+      Dish{
+        Name: "Mushroom",
+        Price: 1.00,
+      },
+      Dish{
+        Name: "Taiwan Sausage",
+        Price: 2.75,
+      },
+      Dish{
+        Name: "Eggplant",
+        Price: 1.49,
+      },
+      Dish{
+        Name: "A Vegetable",
+        Price: 1.49,
+      },
+      Dish{
+        Name: "Chinese Chives",
+        Price: 1.49,
+      },
+      Dish{
+        Name: "String Beans",
+        Price: 1.49,
+      },
+      Dish{
+        Name: "Beef Tendon",
+        Price: 1.75,
+      },
+      Dish{
+        Name: "Steam Bun",
+        Price: 1.00,
       },
     },
     Total: 0.0,
@@ -55,19 +139,32 @@ func GetParam(vals url.Values, s string) string {
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
   c, err := r.Cookie("Name")
-  _, ok := orders[c.Value]
-  if err != nil || !ok {
+  if err != nil {
 	  t, _ := template.ParseFiles("tmpl/create.html")
 	  t.Execute(w, nil)
   } else {
-    t, _ := template.ParseFiles("tmpl/order.html")
-    t.Execute(w, *orders[c.Value])
+    _, ok := orders[c.Value]
+    if !ok {
+      t, _ := template.ParseFiles("tmpl/create.html")
+      t.Execute(w, nil)
+    } else {
+      t, _ := template.ParseFiles("tmpl/order.html")
+      t.Execute(w, *orders[c.Value])
+    }
   }
 }
 
 func TotalHandler(w http.ResponseWriter, r *http.Request) {
+  copyOfTotalOrder := totalOrder
+  filtered := []Dish{}
+  for _, dish := range totalOrder.Dishes {
+    if dish.Count > 0 {
+      filtered = append(filtered, dish)
+    }
+  }
+  copyOfTotalOrder.Dishes = filtered
   t, _ := template.ParseFiles("tmpl/orders.html")
-  t.Execute(w, totalOrder)
+  t.Execute(w, copyOfTotalOrder)
 }
 
 func UpdateHandler(w http.ResponseWriter, r *http.Request) {
