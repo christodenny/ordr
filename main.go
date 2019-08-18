@@ -7,6 +7,7 @@ import (
   "net/http"
   "net/url"
   "strconv"
+  "sync"
 
   "github.com/gorilla/mux"
 )
@@ -25,6 +26,8 @@ type Order struct {
 
 var (
   redirect = http.StatusFound
+
+  lock = sync.RWMutex{}
 
   totalOrder = Order{
     Name: "Total",
@@ -138,6 +141,8 @@ func GetParam(vals url.Values, s string) string {
 }
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
+  lock.RLock()
+  defer lock.RUnlock()
   c, err := r.Cookie("Name")
   if err != nil {
 	  t, _ := template.ParseFiles("tmpl/create.html")
@@ -155,6 +160,8 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func TotalHandler(w http.ResponseWriter, r *http.Request) {
+  lock.RLock()
+  defer lock.RUnlock()
   copyOfTotalOrder := totalOrder
   filtered := []Dish{}
   for _, dish := range totalOrder.Dishes {
@@ -168,6 +175,8 @@ func TotalHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func UpdateHandler(w http.ResponseWriter, r *http.Request) {
+  lock.Lock()
+  defer lock.Unlock()
   c, err := r.Cookie("Name")
   vals := r.URL.Query()
   if err != nil {
@@ -194,6 +203,8 @@ func UpdateHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
+  lock.Lock()
+  defer lock.Unlock()
   vals := r.URL.Query()
   name := GetParam(vals, "name")
   c := http.Cookie{
@@ -225,6 +236,8 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func ResetHandler(w http.ResponseWriter, r *http.Request) {
+  lock.Lock()
+  defer lock.Unlock()
   orders = map[string]*Order{}
   for i, _ := range totalOrder.Dishes {
     totalOrder.Dishes[i].Count = 0
