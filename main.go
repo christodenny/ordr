@@ -189,6 +189,7 @@ func UpdateHandler(w http.ResponseWriter, r *http.Request) {
     for i, dish := range order.Dishes {
       count, err := strconv.Atoi(GetParam(vals, dish.Name))
       if err == nil {
+        totalOrder.Dishes[i].Count += count - order.Dishes[i].Count
         order.Dishes[i].Count = count
       }
       total += float64(order.Dishes[i].Count) * order.Dishes[i].Price
@@ -215,11 +216,16 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
   http.SetCookie(w, &c)
   _, ok := orders[name]
   if !ok {
-    blankOrder := totalOrder
-    blankOrder.Name = name
-    blankOrder.Total = 0.0
+    blankOrder := Order{
+      Name: name,
+      Total: 0.0,
+      Dishes: make([]Dish, len(totalOrder.Dishes)),
+    }
     for i, _ := range blankOrder.Dishes {
-      blankOrder.Dishes[i].Count = 0
+      blankOrder.Dishes[i] = Dish{
+        Name: totalOrder.Dishes[i].Name,
+        Price: totalOrder.Dishes[i].Price,
+      }
     }
     orders[name] = &blankOrder
   }
