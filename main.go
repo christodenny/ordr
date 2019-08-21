@@ -140,6 +140,30 @@ func GetParam(vals url.Values, s string) string {
 	return field
 }
 
+func printDish(d *Dish) {
+	fmt.Printf("%s: %d\n", d.Name, d.Count)
+}
+
+func printOrder(o *Order) {
+	fmt.Printf("Name: %s\nTotal: %.2f\n", o.Name, o.Total)
+	for _, d := range o.Dishes {
+		if d.Count > 0 {
+			printDish(&d)
+		}
+	}
+}
+
+func printState() {
+	fmt.Println("Total:")
+	printOrder(&totalOrder)
+	fmt.Println("Individual orders:")
+	for orderer, order := range orders {
+		fmt.Printf("User %s\n", orderer)
+		printOrder(order)
+	}
+	fmt.Println()
+}
+
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	lock.RLock()
 	defer lock.RUnlock()
@@ -162,6 +186,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 func TotalHandler(w http.ResponseWriter, r *http.Request) {
 	lock.RLock()
 	defer lock.RUnlock()
+	printState()
 	copyOfTotalOrder := totalOrder
 	filtered := []Dish{}
 	for _, dish := range totalOrder.Dishes {
@@ -199,6 +224,7 @@ func UpdateHandler(w http.ResponseWriter, r *http.Request) {
 			totalOrder.Total += total - order.Total
 			order.Total = total
 		}
+		printState()
 		http.Redirect(w, r, "/", redirect)
 	}
 }
@@ -216,19 +242,16 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &c)
 	_, ok := orders[name]
 	if !ok {
-		blankOrder := Order{
-			Name:   name,
-			Total:  0.0,
-			Dishes: make([]Dish, len(totalOrder.Dishes)),
-		}
+		blankOrder := totalOrder
+		blankOrder.Name = name
+		blankOrder.Total = 0.0
+		blankOrder.Dishes = append([]Dish(nil), blankOrder.Dishes...)
 		for i, _ := range blankOrder.Dishes {
-			blankOrder.Dishes[i] = Dish{
-				Name:  totalOrder.Dishes[i].Name,
-				Price: totalOrder.Dishes[i].Price,
-			}
+			blankOrder.Dishes[i].Count = 0
 		}
 		orders[name] = &blankOrder
 	}
+	printState()
 	http.Redirect(w, r, "/", redirect)
 }
 
@@ -237,6 +260,7 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 		Name:   "Name",
 		MaxAge: -1,
 	}
+	printState()
 	http.SetCookie(w, &c)
 	http.Redirect(w, r, "/", redirect)
 }
@@ -249,6 +273,7 @@ func ResetHandler(w http.ResponseWriter, r *http.Request) {
 		totalOrder.Dishes[i].Count = 0
 	}
 	totalOrder.Total = 0.0
+	printState()
 	http.Redirect(w, r, "/", redirect)
 }
 
