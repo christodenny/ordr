@@ -188,7 +188,7 @@ func UpdateHandler(w http.ResponseWriter, r *http.Request) {
 		order := orders[name]
 		for i, dish := range order.Dishes {
 			count, err := strconv.Atoi(GetParam(vals, dish.Name))
-			if err == nil {
+			if err == nil && count >= 0 {
 				totalOrder.Dishes[i].Count += count - order.Dishes[i].Count
 				order.Dishes[i].Count = count
 			}
