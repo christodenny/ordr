@@ -145,8 +145,8 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
   defer lock.RUnlock()
   c, err := r.Cookie("Name")
   if err != nil {
-	  t, _ := template.ParseFiles("tmpl/create.html")
-	  t.Execute(w, nil)
+    t, _ := template.ParseFiles("tmpl/create.html")
+    t.Execute(w, nil)
   } else {
     _, ok := orders[c.Value]
     if !ok {
@@ -180,8 +180,8 @@ func UpdateHandler(w http.ResponseWriter, r *http.Request) {
   c, err := r.Cookie("Name")
   vals := r.URL.Query()
   if err != nil {
-	  t, _ := template.ParseFiles("tmpl/create.html")
-	  t.Execute(w, nil)
+    t, _ := template.ParseFiles("tmpl/create.html")
+    t.Execute(w, nil)
   } else {
     name := c.Value
     total := 0.0
