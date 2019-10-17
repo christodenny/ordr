@@ -225,6 +225,13 @@ func main() {
 	fileServer := http.FileServer(http.Dir("static/"))
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", fileServer))
 
-	log.Println("Starting server on :8080")
-	log.Fatal(http.ListenAndServe(":8080", r))
+	// Get $PORT environment variable
+	port := os.Getenv("PORT")
+	if port == "" {
+		log.Println("$PORT not provided. Using default port 8080.")
+		port = "8080"
+	}
+
+	log.Printf("Starting server on :%s.", port)
+	log.Fatal(http.ListenAndServe(":"+port, r))
 }
