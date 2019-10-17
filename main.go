@@ -1,11 +1,14 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"html/template"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 	"strconv"
 	"sync"
 
@@ -13,9 +16,11 @@ import (
 )
 
 type Dish struct {
-	Name  string
-	Price float64
-	Count int
+	Name        string  `json:"name"`
+	ChineseName string  `json:"chinese_name"`
+	Price       float64 `json:"price"`
+	ImageURL    string  `json:"image_url"`
+	Count       int
 }
 
 type Order struct {
@@ -30,106 +35,32 @@ var (
 	lock = sync.RWMutex{}
 
 	totalOrder = Order{
-		Name: "Total",
-		Dishes: []Dish{
-			Dish{
-				Name:  "Lamb",
-				Price: 1.75,
-			},
-			Dish{
-				Name:  "Beef",
-				Price: 1.50,
-			},
-			Dish{
-				Name:  "Chicken Wing",
-				Price: 2.00,
-			},
-			Dish{
-				Name:  "Chicken",
-				Price: 1.50,
-			},
-			Dish{
-				Name:  "Chicken Gizzard",
-				Price: 1.00,
-			},
-			Dish{
-				Name:  "Chicken Gristle",
-				Price: 1.99,
-			},
-			Dish{
-				Name:  "Chicken Heart",
-				Price: 1.00,
-			},
-			Dish{
-				Name:  "Shrimp",
-				Price: 1.00,
-			},
-			Dish{
-				Name:  "Squid",
-				Price: 1.00,
-			},
-			Dish{
-				Name:  "Yellow Croaker",
-				Price: 1.00,
-			},
-			Dish{
-				Name:  "Pollack",
-				Price: 5.99,
-			},
-			Dish{
-				Name:  "Pig Feet",
-				Price: 4.99,
-			},
-			Dish{
-				Name:  "Sausage",
-				Price: 1.00,
-			},
-			Dish{
-				Name:  "Lamb Kidney",
-				Price: 2.99,
-			},
-			Dish{
-				Name:  "Quail",
-				Price: 4.99,
-			},
-			Dish{
-				Name:  "Mushroom",
-				Price: 1.00,
-			},
-			Dish{
-				Name:  "Taiwan Sausage",
-				Price: 2.75,
-			},
-			Dish{
-				Name:  "Eggplant",
-				Price: 1.49,
-			},
-			Dish{
-				Name:  "A Vegetable",
-				Price: 1.49,
-			},
-			Dish{
-				Name:  "Chinese Chives",
-				Price: 1.49,
-			},
-			Dish{
-				Name:  "String Beans",
-				Price: 1.49,
-			},
-			Dish{
-				Name:  "Beef Tendon",
-				Price: 1.75,
-			},
-			Dish{
-				Name:  "Steam Bun",
-				Price: 1.00,
-			},
-		},
-		Total: 0.0,
+		Name:   "Total",
+		Dishes: nil,
+		Total:  0.0,
 	}
 
 	orders = map[string]*Order{}
 )
+
+func InitMenu() {
+	// Open our jsonFile
+	menuJSONFile, err := os.Open("menu.json")
+
+	// If we os.Open returns an error then handle it
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	// Read in the menu
+	var dishes []Dish
+	menuJSONByteValue, _ := ioutil.ReadAll(menuJSONFile)
+	json.Unmarshal(menuJSONByteValue, &dishes)
+	totalOrder.Dishes = dishes
+
+	// Defer the closing of our jsonFile so that we can parse it later on
+	defer menuJSONFile.Close()
+}
 
 func GetParam(vals url.Values, s string) string {
 	fields, ok := vals[s]
@@ -278,6 +209,9 @@ func ResetHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	// Read the menu from JSON file
+	InitMenu()
+
 	r := mux.NewRouter()
 	r.HandleFunc("/", HomeHandler)
 	r.HandleFunc("/orders", TotalHandler)
