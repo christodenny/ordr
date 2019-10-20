@@ -1,66 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, shrink-to-fit=no"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <title>Ordr</title>
     <!-- Bootstrap core CSS -->
-    <link
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
-      crossorigin="anonymous"
-    />
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
     <!-- Custom styles for this template -->
     <link href="../static/css/create.css" rel="stylesheet" />
-  </head>
+</head>
 
-  <body>
+<body>
     <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-      <a class="navbar-brand" href="./">Ordr</a>
-      <a class="navbar-brand" href="./orders">All Orders</a>
-      <button
-        class="navbar-toggler"
-        type="button"
-        data-toggle="collapse"
-        data-target="#navbarsExampleDefault"
-        aria-controls="navbarsExampleDefault"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-      >
+        <a class="navbar-brand" href="./">Ordr</a>
+        <a class="navbar-brand" href="./orders">All Orders</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
 
-      <div class="collapse navbar-collapse" id="navbarsExampleDefault"></div>
+        <div class="collapse navbar-collapse" id="navbarsExampleDefault"></div>
     </nav>
 
     <main role="main" class="container">
-      <div class="main-center">
-        <h1>Ordr.ai</h1>
-        <p class="lead">Order Total</p>
-        <div class="justify-content-center">
-          <h3>Dishes</h3>
-          {{range .Dishes}}
-          <h4>{{.Name}}: {{.Count}}</h4>
-          {{end}}
-          <h2>Total: ${{.Total}}</h2>
+        <div class="main-center">
+            <h1>Ordr.ai</h1>
+            <p class="lead">Order Total</p>
+            <div class="justify-content-center">
+                <h3>Dishes</h3>
+                {{ range.Dishes }}
+                <h4>{{.Name}}: {{.Count}}</h4>
+                {{ end }}
+                <h2>Total: ${{.Total}}</h2>
+            </div>
         </div>
-      </div>
     </main>
 
     <!-- /.container -->
-    <script
-      src="https://code.jquery.com/jquery-3.4.1.slim.js"
-      integrity="sha256-BTlTdQO9/fascB1drekrDVkaKd9PkwBymMlHOiG+qLI="
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-      integrity="sha384-xrRywqdh3PHs8keKZN+8zzc5TX0GRTLCcmivcbNJWm2rs5C8PRhcEn3czEjhAO9o"
-      crossorigin="anonymous"
-    ></script>
-  </body>
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.js" integrity="sha256-BTlTdQO9/fascB1drekrDVkaKd9PkwBymMlHOiG+qLI=" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-xrRywqdh3PHs8keKZN+8zzc5TX0GRTLCcmivcbNJWm2rs5C8PRhcEn3czEjhAO9o" crossorigin="anonymous"></script>
+</body>
+
 </html>
